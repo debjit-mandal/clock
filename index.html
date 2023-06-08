@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>JavaScript Clock</title>
+  <style>
+    /* Styles for clock and other elements */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    #clock {
+      font-size: 48px;
+      font-weight: bold;
+      margin: 50px 0;
+    }
+
+    .highlight {
+      color: red;
+    }
+
+    .button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+    }
+
+    .alarm {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="clock"></div>
+  <button id="toggle24" class="button" onclick="toggle24HourFormat()">Toggle 24-Hour Format</button>
+  <button id="toggleSeconds" class="button" onclick="toggleSecondsDisplay()">Toggle Seconds Display</button>
+  <button id="reset" class="button" onclick="resetClock()">Reset Clock</button>
+  <button id="setAlarm" class="button" onclick="setAlarm()">Set Alarm</button>
+  <button id="clearAlarm" class="button" onclick="clearAlarm()">Clear Alarm</button>
+
+  <script>
+    // JavaScript code here
+
+    // Function to update the clock
+    function updateClock() {
+      // Get the current date and time
+      var now = new Date();
+      var hours = now.getHours();
+      var minutes = now.getMinutes();
+      var seconds = now.getSeconds();
+
+      // Format the time values to always have two digits
+      hours = String(hours).padStart(2, '0');
+      minutes = String(minutes).padStart(2, '0');
+      seconds = String(seconds).padStart(2, '0');
+
+      // Get the clock element
+      var clock = document.getElementById("clock");
+
+      // Update the clock display
+      clock.textContent = hours + ":" + minutes;
+      if (showSeconds) {
+        clock.textContent += ":" + seconds;
+      }
+
+      // Add a highlight class to the clock element every second
+      clock.classList.toggle("highlight");
+
+      // Change clock color based on time
+      if (hours < 6 || hours >= 18) {
+        clock.style.color = "navy";
+      } else {
+        clock.style.color = "black";
+      }
+
+      // Check if the alarm time matches the current time
+      if (alarmTime === hours + ":" + minutes && seconds === "00") {
+        playAlarm();
+      }
+    }
+
+    // Function to start the clock
+    function startClock() {
+      intervalId = setInterval(updateClock, 1000);
+    }
+
+    // Function to stop the clock
+    function stopClock() {
+      clearInterval(intervalId);
+    }
+
+    // Function to reset the clock
+    function resetClock() {
+      stopClock();
+      updateClock();
+      startClock();
+    }
+
+    // Function to toggle between 24-hour and 12-hour format
+    function toggle24HourFormat() {
+      is24HourFormat = !is24HourFormat;
+      updateClock();
+    }
+
+    // Function to toggle seconds display
+    function toggleSecondsDisplay() {
+      showSeconds = !showSeconds;
+      updateClock();
+    }
+
+    // Function to set the alarm time
+    function setAlarm() {
+      var hours = prompt("Enter the hour for the alarm (in 24-hour format):");
+      var minutes = prompt("Enter the minutes for the alarm:");
+
+      hours = String(hours).padStart(2, '0');
+      minutes = String(minutes).padStart(2, '0');
+
+      alarmTime = hours + ":" + minutes;
+      alert("Alarm set for " + alarmTime);
+
+      // Start the alarm checking interval
+      alarmIntervalId = setInterval(checkAlarm, 1000);
+    }
+
+    // Function to check if the alarm should be triggered
+    function checkAlarm() {
+      var now = new Date();
+      var hours = now.getHours();
+      var minutes = now.getMinutes();
+      var seconds = now.getSeconds();
+
+      hours = String(hours).padStart(2, '0');
+      minutes = String(minutes).padStart(2, '0');
+
+      if (alarmTime === hours + ":" + minutes && seconds === "00") {
+        playAlarm();
+      }
+    }
+
+    // Function to clear the alarm
+    function clearAlarm() {
+      clearInterval(alarmIntervalId);
+      alarmTime = "";
+      alert("Alarm cleared");
+    }
+
+    // Function to play the alarm sound
+    function playAlarm() {
+      var audio = new Audio('alarm_sound.mp3');
+      audio.play();
+      alert("Alarm!");
+    }
+
+    // Initial setup
+    var is24HourFormat = true;
+    var showSeconds = true;
+    var intervalId;
+    var alarmTime = "";
+    var alarmIntervalId;
+
+    // Update the clock immediately
+    updateClock();
+
+    // Start the clock
+    startClock();
+
+    // Listen for window blur and focus events
+    window.addEventListener('blur', stopClock);
+    window.addEventListener('focus', startClock);
+
+  </script>
+</body>
+
+</html>
