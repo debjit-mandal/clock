@@ -1,4 +1,4 @@
-# clock
+# Clock
 Clock made using JavaScript
 
 To run this code locally:
